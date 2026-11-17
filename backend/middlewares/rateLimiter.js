@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit');
 // Generous default limiter for most API traffic.
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300,
+  max: 900,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, please slow down.' },

@@ -120,3 +120,27 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at TIMESTAMP DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS saved_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+  product_id UUID REFERENCES products(id) ON DELETE CASCADE NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, product_id) -- Prevents duplicate saves
+);
+
+CREATE INDEX IF NOT EXISTS idx_saved_items_user ON saved_items(user_id);
+
+CREATE TABLE IF NOT EXISTS chat_reports (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  room_id UUID REFERENCES chat_rooms(id) ON DELETE CASCADE,
+  reporter_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  reported_user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  reason TEXT NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending', -- pending, resolved, dismissed
+  created_at TIMESTAMP DEFAULT NOW(),
+  resolved_at TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_reports_status ON chat_reports(status);
+CREATE INDEX IF NOT EXISTS idx_chat_reports_created_at ON chat_reports(created_at);

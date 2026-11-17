@@ -3,7 +3,7 @@ import axiosClient from '../api/axiosClient';
 import { useAuthStore } from '../store/useAuthStore';
 import { 
   Plus, Package, Image as ImageIcon, DollarSign, 
-  Tag, Hash, Trash2, Edit, AlertCircle, 
+  Tag, Hash, Trash2, Edit, AlertCircle, AlertTriangle,
   CheckCircle, Clock, XCircle, Upload, X 
 } from 'lucide-react';
 
@@ -22,6 +22,9 @@ export default function SellerDashboard() {
   const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // State for the custom delete modal
+  const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -93,13 +96,24 @@ export default function SellerDashboard() {
     }
   }
 
-  async function handleDelete(id) {
-    if (!window.confirm('Are you sure you want to delete this listing?')) return;
+  // Modal control functions
+  function openDeleteModal(id) {
+    setDeleteModal({ open: true, id });
+  }
+
+  function closeDeleteModal() {
+    setDeleteModal({ open: false, id: null });
+  }
+
+  async function confirmDelete() {
+    if (!deleteModal.id) return;
+    setError('');
     try {
-      await axiosClient.delete(`/api/products/${id}`);
+      await axiosClient.delete(`/api/products/${deleteModal.id}`);
+      closeDeleteModal();
       loadListings();
     } catch (err) {
-      setError('Failed to delete listing.');
+      setError(err.response?.data?.error || 'Failed to delete listing.');
     }
   }
 
@@ -323,7 +337,7 @@ export default function SellerDashboard() {
                           <div className="flex justify-between items-start">
                             <h3 className="font-semibold text-gray-900 text-sm truncate pr-2">{p.title}</h3>
                             <button 
-                              onClick={() => handleDelete(p.id)}
+                              onClick={() => openDeleteModal(p.id)}
                               className="text-gray-400 hover:text-red-600 p-1 rounded-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                               title="Delete listing"
                             >
@@ -354,6 +368,41 @@ export default function SellerDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Custom Delete Confirmation Modal */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-200">
+            
+            {/* Modal Header */}
+            <div className="p-6 pb-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900">Delete Listing?</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Are you sure you want to permanently delete this listing? This action cannot be undone.
+              </p>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+              <button
+                onClick={closeDeleteModal}
+                className="px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-200 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm shadow-red-200"
+              >
+                Delete Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

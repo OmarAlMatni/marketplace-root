@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  background: #f9fafb;
+}
+
+html.dark {
+  background: #020617;
+}
+
 @layer utilities {
   .skeleton {
     @apply animate-pulse bg-gray-200 rounded;

@@ -1,21 +1,18 @@
 import { create } from 'zustand';
 
-/**
- * Live UI Notifications.
- * The socket handler in useWebSockets.js calls addNotification() whenever
- * a `new_notification` event arrives, which increments the navbar badge.
- */
 export const useNotificationStore = create((set) => ({
   count: 0,
+  unreadMessages: 0, // Add this
   notifications: [],
-
-  addNotification: (notification) =>
-    set((state) => ({
-      count: state.count + 1,
-      notifications: [notification, ...state.notifications].slice(0, 50),
-    })),
-
+  
   setCount: (count) => set({ count }),
-
-  clear: () => set({ count: 0, notifications: [] }),
+  incrementCount: () => set((state) => ({ count: state.count + 1 })),
+  incrementUnreadMessages: () => set((state) => ({ unreadMessages: state.unreadMessages + 1 })), // Add this
+  resetUnreadMessages: () => set({ unreadMessages: 0 }), // Add this
+  
+  setNotifications: (notifications) => set({ notifications }),
+  addNotification: (notification) => set((state) => ({ 
+    notifications: [notification, ...state.notifications] 
+  })),
+  clearNotifications: () => set({ notifications: [] }),
 }));

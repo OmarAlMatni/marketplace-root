@@ -94,12 +94,12 @@ export default function UsersView() {
             placeholder="Search by email or display name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all"
+            className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-gray-900 placeholder-gray-400 transition-all focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500"
           />
         </form>
-        <div className="flex items-center gap-3 px-5 py-3 bg-slate-900 border border-slate-800 rounded-xl">
-          <Users className="h-5 w-5 text-indigo-400" />
-          <span className="text-sm font-semibold text-white">
+        <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-5 py-3 dark:border-slate-800 dark:bg-slate-900">
+          <Users className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">
             {loading ? '...' : `${users.length} Total Users`}
           </span>
         </div>
@@ -107,11 +107,11 @@ export default function UsersView() {
 
       {/* Error Banner */}
       {error && (
-        <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-xl flex items-start gap-3">
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
           <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-red-200">Error</p>
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm font-medium text-red-800 dark:text-red-200">Error</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
           <button onClick={() => setError('')} className="text-red-400 hover:text-red-300">
             <X className="h-4 w-4" />
@@ -120,41 +120,41 @@ export default function UsersView() {
       )}
 
       {/* Table Container */}
-      <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         {loading ? (
           <div className="p-6 space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="flex items-center gap-4 animate-pulse">
-                <div className="h-10 w-10 rounded-full bg-slate-800" />
+                <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-slate-800" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-slate-800 rounded w-1/4" />
-                  <div className="h-3 bg-slate-800 rounded w-1/3" />
+                  <div className="h-4 w-1/4 rounded bg-gray-200 dark:bg-slate-800" />
+                  <div className="h-3 w-1/3 rounded bg-gray-200 dark:bg-slate-800" />
                 </div>
               </div>
             ))}
           </div>
         ) : users.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-              <UserX className="h-8 w-8 text-slate-500" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-800">
+              <UserX className="h-8 w-8 text-gray-400 dark:text-slate-500" />
             </div>
-            <h3 className="text-lg font-semibold text-white">No users found</h3>
-            <p className="text-sm text-slate-400 mt-1">Try adjusting your search terms.</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">No users found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Try adjusting your search terms.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-slate-800/50 border-b border-slate-800">
+              <thead className="border-b border-gray-200 bg-gray-50 dark:border-slate-800 dark:bg-slate-800/50">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">User</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Status</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Joined</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400 text-right">Actions</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">User</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Status</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Joined</th>
+                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {users.map((u) => (
-                  <tr key={u.id} className="bg-slate-900 hover:bg-slate-800/50 transition-colors">
+                  <tr key={u.id} className="bg-white transition-colors hover:bg-gray-50 dark:bg-slate-900 dark:hover:bg-slate-800/50">
                     {/* User Info */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
@@ -166,10 +166,10 @@ export default function UsersView() {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-white truncate">
+                          <p className="truncate font-semibold text-gray-900 dark:text-white">
                             {u.display_name || 'Unnamed User'}
                           </p>
-                          <p className="text-sm text-slate-400 truncate">
+                          <p className="truncate text-sm text-gray-500 dark:text-slate-400">
                             {u.email}
                           </p>
                         </div>
@@ -190,7 +190,7 @@ export default function UsersView() {
                     </td>
 
                     {/* Joined Date */}
-                    <td className="px-6 py-4 text-sm text-slate-400">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">
                       {new Date(u.created_at).toLocaleDateString(undefined, { 
                         year: 'numeric', month: 'short', day: 'numeric' 
                       })}
@@ -202,14 +202,14 @@ export default function UsersView() {
                         <button
                           onClick={() => handleBanToggle(u)}
                           title={u.status === 'banned' ? 'Unban User' : 'Ban User'}
-                          className="p-2 text-amber-400 hover:text-amber-300 hover:bg-slate-800 rounded-lg transition-colors"
+                          className="rounded-lg p-2 text-amber-500 transition-colors hover:bg-gray-100 hover:text-amber-600 dark:text-amber-400 dark:hover:bg-slate-800 dark:hover:text-amber-300"
                         >
                           {u.status === 'banned' ? <ShieldCheck className="h-4 w-4" /> : <ShieldBan className="h-4 w-4" />}
                         </button>
                         <button
                           onClick={() => openDeleteModal(u)}
                           title="Delete User"
-                          className="p-2 text-amber-400 hover:text-amber-300 hover:bg-slate-800 rounded-lg transition-colors"
+                          className="rounded-lg p-2 text-amber-500 transition-colors hover:bg-gray-100 hover:text-amber-600 dark:text-amber-400 dark:hover:bg-slate-800 dark:hover:text-amber-300"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -226,20 +226,20 @@ export default function UsersView() {
       {/* Delete Confirmation Modal */}
       {deleteModal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl animate-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900">
             <div className="p-6 text-center">
               <div className="w-14 h-14 bg-red-900/20 border border-red-800 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertTriangle className="h-7 w-7 text-red-400" />
               </div>
-              <h3 className="text-lg font-bold text-white">Delete User Account?</h3>
-              <p className="mt-2 text-sm text-slate-400">
-                Are you sure you want to permanently delete <strong className="text-white">{deleteModal.user.email}</strong>? This action cannot be undone.
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Delete User Account?</h3>
+              <p className="mt-2 text-sm text-gray-600 dark:text-slate-400">
+                Are you sure you want to permanently delete <strong className="text-gray-900 dark:text-white">{deleteModal.user.email}</strong>? This action cannot be undone.
               </p>
             </div>
-            <div className="px-6 py-4 bg-slate-800/50 border-t border-slate-800 flex justify-end gap-3">
+            <div className="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-slate-800 dark:bg-slate-800/50">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 rounded-xl transition-colors"
+                className="rounded-xl px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>

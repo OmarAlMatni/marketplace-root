@@ -9,7 +9,14 @@ import { useTranslation } from '../utils/i18n';
 
 function Badge({ count }) {
   if (!count) return null;
-  return <span aria-label={`${count} unread notifications`} className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-black" />;
+  return (
+    <span 
+      aria-label={`${count} items`} 
+      className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-black"
+    >
+      {count > 9 ? '9+' : count}
+    </span>
+  );
 }
 
 function Avatar({ user, small = false }) {
@@ -26,6 +33,7 @@ export default function Navbar() {
   const { user, logout } = useAuthStore();
   const items = useCartStore((state) => state.items);
   const notifCount = useNotificationStore((state) => state.count);
+  const unreadMessages = useNotificationStore((state) => state.unreadMessages || 0); // Add this if your store has it
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get('search') || '');
@@ -66,11 +74,17 @@ export default function Navbar() {
         <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
           {user ? <>
             <Link to="/notifications" aria-label={t('notifications')} className="relative rounded-xl p-2.5 text-slate-700 hover:bg-transparent hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-transparent dark:hover:text-indigo-300"><Bell size={22} /><Badge count={notifCount} /></Link>
-            <Link to="/chat" aria-label={t('messages')} className="relative rounded-xl p-2.5 text-slate-700 hover:bg-transparent hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-transparent dark:hover:text-indigo-300"><MessageCircle size={22} /></Link>
+            
+            {/* Chat icon with badge */}
+            <Link to="/chat" aria-label={t('messages')} className="relative rounded-xl p-2.5 text-slate-700 hover:bg-transparent hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-transparent dark:hover:text-indigo-300">
+              <MessageCircle size={22} />
+              <Badge count={unreadMessages} />
+            </Link>
+            
             <Link to="/cart" aria-label={t('cart')} className="relative rounded-xl p-2.5 text-slate-700 hover:bg-transparent hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-transparent dark:hover:text-indigo-300"><ShoppingCart size={22} /><Badge count={cartCount} /></Link>
             <Link to="/sell" aria-label={t('myListings')} className="hidden rounded-xl p-2.5 text-slate-700 hover:bg-transparent hover:text-indigo-600 dark:text-slate-300 dark:hover:bg-transparent dark:hover:text-indigo-300 sm:block"><Package size={22} /></Link>
             <span className="mx-1 hidden h-9 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
-            <div ref={menuRef} className="relative"><button onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-label={t('myAccount')} className="rounded-full p-0.5 hover:ring-2 hover:ring-indigo-200"><Avatar user={user} /></button>{menuOpen && <div className="absolute right-0 top-[calc(100%+14px)] w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-300/40 dark:border-slate-800 dark:bg-black"><div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800"><Avatar user={user} small /><div className="min-w-0"><p className="truncate font-bold text-slate-900 dark:text-white">{user.display_name || t('myAccount')}</p><p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p></div></div><div className="p-2"><MenuLink to="/account" icon={User} label={t('myAccount')} close={() => setMenuOpen(false)} /><MenuLink to="/orders" icon={Box} label={t('myOrders')} close={() => setMenuOpen(false)} /><MenuLink to="/saved" icon={Heart} label={t('savedItems')} close={() => setMenuOpen(false)} /><MenuLink to="/settings" icon={Settings} label={t('settings')} close={() => setMenuOpen(false)} /><MenuLink to="/help" icon={HelpCircle} label={t('helpSupport')} close={() => setMenuOpen(false)} />{isStaff && <MenuLink to="/admin" icon={Package} label={t('adminDashboard')} close={() => setMenuOpen(false)} />}</div><div className="border-t border-slate-100 p-3 dark:border-slate-800"><button onClick={signOut} className="flex w-full items-center justify-center gap-2 rounded-full bg-red-500 py-2.5 text-sm font-bold text-white hover:bg-red-600"><LogOut size={17} /> {t('signOut')}</button></div></div>}</div>
+            <div ref={menuRef} className="relative"><button onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-label={t('myAccount')} className="rounded-full p-0.5 hover:ring-2 hover:ring-indigo-200"><Avatar user={user} /></button>{menuOpen && <div className="absolute right-0 top-[calc(100%+14px)] w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-300/40 dark:border-slate-800 dark:bg-black"><div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800"><Avatar user={user} small /><div className="min-w-0"><p className="truncate font-bold text-slate-900 dark:text-white">{user.display_name || t('myAccount')}</p><p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p></div></div><div className="p-2"><MenuLink to="/account" icon={User} label={t('myAccount')} close={() => setMenuOpen(false)} /><MenuLink to="/orders" icon={Box} label={t('myOrders')} close={() => setMenuOpen(false)} /><MenuLink to="saved-items" icon={Heart} label={t('savedItems')} close={() => setMenuOpen(false)} /><MenuLink to="/settings" icon={Settings} label={t('settings')} close={() => setMenuOpen(false)} /><MenuLink to="/help" icon={HelpCircle} label={t('helpSupport')} close={() => setMenuOpen(false)} />{isStaff && <MenuLink to="/admin" icon={Package} label={t('adminDashboard')} close={() => setMenuOpen(false)} />}</div><div className="border-t border-slate-100 p-3 dark:border-slate-800"><button onClick={signOut} className="flex w-full items-center justify-center gap-2 rounded-full bg-red-500 py-2.5 text-sm font-bold text-white hover:bg-red-600"><LogOut size={17} /> {t('signOut')}</button></div></div>}</div>
           </> : <><Link to="/login" className="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-indigo-600">{t('signIn')}</Link><Link to="/register" className="rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-700">{t('signUp')}</Link></>}
         </div>
       </div>

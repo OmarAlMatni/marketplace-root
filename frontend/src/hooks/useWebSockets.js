@@ -2,55 +2,58 @@ import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useAuthStore } from '../store/useAuthStore';
 import { useNotificationStore } from '../store/useNotificationStore';
-import axiosClient from '../api/axiosClient';
 
-/**
- * Sets up a single Socket.io connection for the whole app: joins the
- * user's personal notification room automatically, and exposes helpers
- * for joining a specific chat room and sending/receiving messages.
- */
-export function useWebSockets({ onNewMessage, listenNotifications = true } = {}) {
-  const token = useAuthStore((s) => s.token);
-  const addNotification = useNotificationStore((s) => s.addNotification);
-  const setCount = useNotificationStore((s) => s.setCount);
+export function useWebSockets({ onNewMessage, listenNotifications = true }) {
   const socketRef = useRef(null);
+  const token = useAuthStore((state) => state.token);
+  const incrementNotif = useNotificationStore((state) => state.incrementCount);
+ // const resetUnreadMessages = useNotificationStore((state) => state.resetUnreadMessages); // Add this
+  const incrementUnreadMessages = useNotificationStore((state) => state.incrementUnreadMessages); // Add this
 
   useEffect(() => {
-    if (!token) return undefined;
-
-    if (listenNotifications) {
-      axiosClient.get('/api/notifications').then(({ data }) => setCount(data.unreadCount)).catch(() => {});
-    }
-
-    const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000', {
+    if (!token) return;
+    socketRef.current = io(import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000', { 
       auth: { token },
+      transports: ['websocket', 'polling']
     });
-    socketRef.current = socket;
+
+    socketRef.current.on('connect', () => console.log('✅ Socket connected'));
 
     if (listenNotifications) {
-      socket.on('new_notification', (notification) => {
-        addNotification(notification);
+      socketRef.current.on('new_notification', (data) => {
+        incrementNotif();
+        // If it's a chat notification, also increment unread messages
+        if (data.type === 'chat') {
+          incrementUnreadMessages();
+        }
       });
     }
 
-    if (onNewMessage) {
-      socket.on('new_message', onNewMessage);
-    }
-
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
+    return () => { 
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [token, listenNotifications, incrementNotif, incrementUnreadMessages]);
 
-  function joinRoom(roomId) {
-    socketRef.current?.emit('join_room', { room_id: roomId });
-  }
+  const joinRoom = (roomId) => {
+    if (socketRef.current?.connected) {
+      socketRef.current.emit('join_room', { room_id: roomId });
+    }
+  };
 
-  function sendMessage(roomId, text) {
-    socketRef.current?.emit('send_message', { room_id: roomId, text });
-  }
+  const sendMessage = (roomId, text) => {
+    if (socketRef.current?.connected) {
+      socketRef.current.emit('send_message', { room_id: roomId, text });
+    }
+  };
 
-  return { socket: socketRef.current, joinRoom, sendMessage };
+  useEffect(() => {
+    if (!socketRef.current || !onNewMessage) return;
+    socketRef.current.on('new_message', onNewMessage);
+    return () => socketRef.current?.off('new_message', onNewMessage);
+  }, [onNewMessage]);
+
+  return { joinRoom, sendMessage };
 }

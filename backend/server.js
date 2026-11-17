@@ -19,9 +19,11 @@ const { errorHandler, notFound } = require('./middlewares/errorHandler');
 const { registerChatSocket } = require('./sockets/chatSocket');
 const notificationRoutes = require('./routes/notificationRoutes');
 const { setSocketServer } = require('./services/notificationService');
+const savedItemRoutes = require('./routes/savedItemRoutes');
 
 const app = express();
 const server = http.createServer(app);
+app.set('trust proxy', 1); 
 
 // Two frontends now talk to this API: the storefront (CLIENT_ORIGIN) and
 // the separate staff-only admin portal (ADMIN_CLIENT_ORIGIN). Both are
@@ -66,6 +68,8 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/saved-items', savedItemRoutes);
+app.use('/api/admin', adminRoutes); // <-- This MUST be here
 
 app.use(notFound);
 app.use(errorHandler);

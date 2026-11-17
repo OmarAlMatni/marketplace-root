@@ -7,6 +7,7 @@ import DashboardView from './views/DashboardView';
 import ModerationView from './views/ModerationView';
 import UsersView from './views/UsersView';
 import AdminAccountsView from './views/AdminAccountsView';
+import ReportsView from './views/ReportsView';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         }
       >
         <Route path="/" element={<DashboardView />} />
+        <Route path="/reports" element={<ReportsView />} />
         <Route path="/moderation" element={<ModerationView />} />
         <Route path="/users" element={<UsersView />} />
         <Route

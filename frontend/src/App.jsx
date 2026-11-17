@@ -14,15 +14,16 @@ import AccountView from './views/AccountView';
 import OrdersView from './views/OrdersView';
 import NotificationsView from './views/NotificationsView';
 import SettingsView from './views/SettingsView';
-import SavedView from './views/SavedView';
+import SavedItemsView from './views/SavedItemsView';
 import HelpView from './views/HelpView';
 import { useAuthStore } from './store/useAuthStore';
 import { useWebSockets } from './hooks/useWebSockets';
 
 export default function App() {
   const preferences = useAuthStore((state) => state.user?.preferences);
-  useWebSockets();
-
+// Add this inside the App component, right after 'const preferences = ...'
+// This keeps the socket alive for notifications
+useWebSockets({ onNewMessage: () => {}, listenNotifications: true }); 
   useEffect(() => {
     const theme = preferences?.theme || 'system';
     const dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -47,7 +48,7 @@ export default function App() {
         <Route path="/orders" element={<OrdersView />} />
         <Route path="/notifications" element={<NotificationsView />} />
         <Route path="/settings/:section?" element={<SettingsView />} />
-        <Route path="/saved" element={<SavedView />} />
+        <Route path="/saved-items" element={<SavedItemsView />} />
         <Route path="/help" element={<HelpView />} />
 
       </Routes>
